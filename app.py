@@ -1,5 +1,6 @@
 import os
 import re
+import gzip
 import pickle
 import urllib.request
 import urllib.parse
@@ -87,10 +88,14 @@ def proxy(path):
     if request.query_string:
         target_url += f"?{request.query_string.decode('utf-8')}"
 
-    # Copy relevant headers
-    headers = {k: v for k, v in request.headers if k.lower() not in ['host', 'content-length', 'connection']}
+    # Filter out host, content-length, connection, and accept-encoding so upstream returns raw content
+    headers = {
+        k: v for k, v in request.headers 
+        if k.lower() not in ['host', 'content-length', 'connection', 'accept-encoding']
+    }
     headers['Host'] = 'realestatevaluation.base44.app'
     headers['Referer'] = BASE44_ORIGIN
+    headers['Accept-Encoding'] = 'identity'
 
     req_data = request.get_data() if request.method in ['POST', 'PUT', 'PATCH'] else None
     req = urllib.request.Request(
@@ -103,6 +108,14 @@ def proxy(path):
     try:
         with urllib.request.urlopen(req) as resp:
             content = resp.read()
+            
+            # Decompress if upstream compressed with gzip
+            if resp.headers.get('Content-Encoding') == 'gzip' or (len(content) >= 2 and content[:2] == b'\x1f\x8b'):
+                try:
+                    content = gzip.decompress(content)
+                except Exception:
+                    pass
+
             content_type = resp.headers.get('Content-Type', 'text/html')
 
             # Clean and sanitize HTML response
@@ -120,6 +133,11 @@ def proxy(path):
             return Response(content, status=resp.status, headers=response_headers, content_type=content_type)
     except urllib.error.HTTPError as e:
         error_content = e.read()
+        if e.headers.get('Content-Encoding') == 'gzip' or (len(error_content) >= 2 and error_content[:2] == b'\x1f\x8b'):
+            try:
+                error_content = gzip.decompress(error_content)
+            except Exception:
+                pass
         return Response(error_content, status=e.code, content_type=e.headers.get('Content-Type', 'text/html'))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
