@@ -4,12 +4,9 @@ A Machine Learning-powered REST API and interactive web application for estimati
 
 ---
 
-### Live Deployment & Links
+### Live Demo
 
-- **Live Web App & Valuation Tool:** [nigerian-house-data-ipynb.onrender.com](https://nigerian-house-data-ipynb.onrender.com)
-- **API Prediction Endpoint:** `POST` [https://nigerian-house-data-ipynb.onrender.com/predict](https://nigerian-house-data-ipynb.onrender.com/predict)
-- **API Health Check:** `GET` [https://nigerian-house-data-ipynb.onrender.com/health](https://nigerian-house-data-ipynb.onrender.com/health)
-- **GitHub Repository:** [Trainbow-7/nigerian_house_data.ipynb](https://github.com/Trainbow-7/nigerian_house_data.ipynb)
+- **Live Valuation Tool:** [https://nigerian-house-data-ipynb.onrender.com](https://nigerian-house-data-ipynb.onrender.com)
 
 > **Note on Hosting:** Hosted on Render's free tier. If the instance is idle, it may take 30–60 seconds for the initial cold start.
 
