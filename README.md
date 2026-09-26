@@ -1,263 +1,232 @@
-# Nigeria Houses ML API 🏠
+# Nigeria Real Estate Valuation & House Price Prediction ML API 🏠
 
-A FastAPI-based REST API for predicting Nigerian real estate property types using machine learning. Trained on 24,326 real estate records with 87%+ accuracy.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Framework-Flask-black.svg)](https://flask.palletsprojects.com/)
+[![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn-orange.svg)](https://scikit-learn.org/)
+[![Render](https://img.shields.io/badge/Deployed-Render-46E3B7.svg)](https://nigerian-house-data-ipynb.onrender.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-🔗 **Live Demo:** [realestatevaluation.base44.app](https://realestatevaluation.base44.app)  
-⚡ **API Docs (Swagger UI):** [nigerian-house-data-ipynb.onrender.com/docs](https://nigerian-house-data-ipynb.onrender.com/docs)
+A Machine Learning-powered REST API and interactive web application for estimating Nigerian real estate market property values. Trained on **24,000+ verified Nigerian property listings** across major states and metropolitan areas.
 
-> Note: hosted on Render's free tier — the API may take 30–60 seconds to wake up if it's been inactive.
+---
+
+### 🌐 Live Deployment & Links
+
+- 🔗 **Live Web App & Valuation Tool:** [nigerian-house-data-ipynb.onrender.com](https://nigerian-house-data-ipynb.onrender.com)
+- ⚡ **API Prediction Endpoint:** `POST` [https://nigerian-house-data-ipynb.onrender.com/predict](https://nigerian-house-data-ipynb.onrender.com/predict)
+- 🩺 **API Health Check:** `GET` [https://nigerian-house-data-ipynb.onrender.com/health](https://nigerian-house-data-ipynb.onrender.com/health)
+- 🐙 **GitHub Repository:** [Trainbow-7/nigerian_house_data.ipynb](https://github.com/Trainbow-7/nigerian_house_data.ipynb)
+
+> 💡 **Note on Hosting:** Hosted on Render's free tier. If the instance is idle, it may take 30–60 seconds for the initial cold start.
+
+---
 
 ## 🎯 Features
 
-- **Property Type Prediction** - Predicts house property type based on features
-- **Batch Processing** - Make predictions for multiple properties at once
-- **Model Info Endpoint** - Get details about the loaded ML model
-- **Interactive Documentation** - Swagger UI at `/docs`
-- **CORS Enabled** - Ready for frontend integration
-- **Production Ready** - Deployed on Render
+- **Accurate Property Valuation** — Generates instant real estate price predictions in Nigerian Naira (₦).
+- **Comprehensive Geographical Coverage** — Trained across 24 Nigerian states and 186 towns/cities (Lagos, Abuja, Rivers, Oyo, Ogun, etc.).
+- **Multi-Property Type Support** — Supports Detached Duplexes, Semi-Detached Duplexes, Terraced Duplexes, Bungalows, Blocks of Flats, and more.
+- **Built-in Interactive Web Interface** — Beautiful, responsive UI directly accessible at the root URL.
+- **RESTful JSON API** — Ready for seamless integration with mobile apps, web frontends, or CRM systems.
+- **CORS Enabled** — Cross-Origin Resource Sharing enabled for modern frontend applications.
 
-## 📊 Model Details
+---
 
-- **Input Features:** Bedrooms, Bathrooms, Toilets, Parking Spaces
-- **Output:** Property type (Detached Duplex, Terraced Duplex, Semi Detached Duplex, etc.)
-- **Algorithm:** Random Forest / Gradient Boosting / Logistic Regression
-- **Training Data:** 24,326 Nigerian property listings
+## 📊 Model Specifications
 
-## 🚀 Quick Start
+| Parameter | Specification |
+| :--- | :--- |
+| **Model Type** | Machine Learning Regression Pipeline |
+| **Algorithm** | `GradientBoostingRegressor` |
+| **Preprocessing** | `OneHotEncoder` (Categorical) + `ColumnTransformer` Pipeline |
+| **Training Records** | 24,000+ Nigerian listings |
+| **Numerical Features** | `bedrooms`, `bathrooms`, `toilets`, `parking_space` |
+| **Categorical Features**| `title` (Property Type), `town`, `state` |
+| **Target Variable** | `price` (in ₦ NGN) |
 
-### Local Development
+---
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/nigeria-houses-api.git
-   cd nigeria-houses-api
-   ```
+## 📡 API Endpoints & Usage
 
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+### 1. Make a Price Prediction
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+**`POST /predict`**
 
-4. **Place model files**
-   ```bash
-   # Copy your trained model files to project root:
-   - random_forest_model.pkl (or your model name)
-   - label_encoder.pkl
-   - scaler.pkl (optional)
-   ```
-
-5. **Run the API**
-   ```bash
-   python main.py
-   ```
-
-6. **Open documentation**
-   ```
-   http://localhost:8000/docs
-   ```
-
-## 📡 API Endpoints
-
-### Health Check
-```
-GET /health
+#### Request Headers
+```http
+Content-Type: application/json
 ```
 
-### Get Model Info
-```
-GET /info
-```
-
-### Single Prediction
-```
-POST /predict
-
-Body:
+#### Request Body
+```json
 {
   "bedrooms": 4,
-  "bathrooms": 3,
-  "toilets": 3,
-  "parking_space": 2
+  "bathrooms": 4,
+  "toilets": 5,
+  "parking_space": 3,
+  "title": "Detached Duplex",
+  "town": "Lekki",
+  "state": "Lagos"
 }
 ```
 
-### Batch Prediction
-```
-POST /predict-batch
-
-Body:
-[
-  {"bedrooms": 4, "bathrooms": 3, "toilets": 3, "parking_space": 2},
-  {"bedrooms": 3, "bathrooms": 2, "toilets": 2, "parking_space": 1}
-]
-```
-
-## 🌐 Live API
-
-Deployed on Render at: `https://nigeria-houses-api.onrender.com`
-
-### Example Request
-```bash
-curl -X POST https://nigeria-houses-api.onrender.com/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "bedrooms": 4,
-    "bathrooms": 3,
-    "toilets": 3,
-    "parking_space": 2
-  }'
-```
-
-### Example Response
+#### Response (`200 OK`)
 ```json
 {
-  "predicted_property_type": "Detached Duplex",
-  "confidence": 87.5,
-  "all_probabilities": {
-    "Detached Duplex": 87.5,
-    "Terraced Duplex": 10.2,
-    "Semi Detached Duplex": 2.3
-  },
-  "input_features": {
+  "status": "success",
+  "predicted_price": 119936381.82,
+  "formatted_price": "₦119,936,381.82",
+  "currency": "NGN",
+  "inputs": {
     "bedrooms": 4,
-    "bathrooms": 3,
-    "toilets": 3,
-    "parking_space": 2
+    "bathrooms": 4,
+    "toilets": 5,
+    "parking_space": 3,
+    "house_type": "Detached Duplex",
+    "town": "Lekki",
+    "state": "Lagos"
   }
 }
 ```
 
-## 📁 Project Structure
+---
 
+### 2. Health Check
+
+**`GET /health`**
+
+#### Response (`200 OK`)
+```json
+{
+  "status": "healthy",
+  "model_loaded": true,
+  "model_type": "GradientBoostingRegressor (Nigeria Real Estate Valuation)"
+}
 ```
-.
-├── main.py                    # FastAPI application
-├── requirements.txt           # Python dependencies
-├── render.yaml                # Render deployment config
-├── random_forest_model.pkl    # Trained model
-├── label_encoder.pkl          # Label encoder for predictions
-├── scaler.pkl                 # Feature scaler (optional)
-└── README.md                  # This file
-```
-
-## 🛠️ Technologies
-
-- **FastAPI** - Modern web framework
-- **Uvicorn** - ASGI server
-- **Scikit-learn** - ML models
-- **Pandas** - Data processing
-- **Pydantic** - Data validation
-- **Render** - Hosting platform
-
-## 📚 Training the Model
-
-The model was trained using the Nigeria houses dataset with these steps:
-
-1. **Data Loading** - 24,326 property records
-2. **Exploratory Analysis** - Feature distributions & correlations
-3. **Preprocessing** - Feature scaling, train-test split
-4. **Model Training** - Random Forest, Gradient Boosting, Logistic Regression
-5. **Evaluation** - Cross-validation, confusion matrices
-6. **Deployment** - Serialized model to pickle
-
-See `nigeria_houses_model_colab.py` for full training code.
-
-## 🚀 Deployment
-
-### Deploy to Render
-
-See `RENDER_DEPLOYMENT_GUIDE.md` for step-by-step instructions.
-
-**Quick deploy:**
-1. Push to GitHub
-2. Connect repo to Render
-3. Use `render.yaml` for auto-configuration
-4. Done! 🎉
-
-### Environment Variables
-
-Currently, no environment variables required. For production with secrets:
-
-```bash
-# Add in Render dashboard → Settings → Environment Variables
-DATABASE_URL=your_database_url
-SECRET_KEY=your_secret_key
-```
-
-## 🔒 Security
-
-- CORS enabled for all origins (change if needed)
-- No API key authentication (add if needed)
-- Input validation via Pydantic
-- Error handling for edge cases
-
-## 📈 Performance
-
-- **Cold start:** ~2-3 seconds (free tier)
-- **Inference time:** ~50ms per prediction
-- **Memory usage:** ~200MB
-- **Concurrent requests:** Depends on plan
-
-## 🐛 Troubleshooting
-
-### Model not loading?
-- Ensure pickle files are in repository
-- Check file names match: `*_model.pkl`, `label_encoder.pkl`
-
-### Port errors?
-- Start command must include `$PORT` variable
-- For local: `python main.py` (uses port 8000)
-
-### Slow responses?
-- Free tier Render apps spin down after 15 min inactivity
-- Upgrade to paid tier for always-on service
-
-## 📝 Logging
-
-All API requests are logged. View logs in Render dashboard:
-- Deployment logs
-- Runtime logs
-- Error logs
-
-## 🤝 Contributing
-
-Contributions welcome! Areas for improvement:
-- Add price prediction endpoint
-- Implement request caching
-- Add database for prediction history
-- Build web frontend
-- Add more models
-
-## 📄 License
-
-MIT License - feel free to use this project!
-
-## 👤 Author
-
-- **Temitayo Oyedeji**
-- UAV HUB SYSTEMS LTD
-- Email: [your-email]
-- GitHub: [@your-username]
-
-## 📞 Support
-
-- API Documentation: `/docs` endpoint
-- Issues: GitHub Issues
-- Email: your-email@example.com
-
-## 🎓 Learning Resources
-
-- [FastAPI Tutorial](https://fastapi.tiangolo.com/tutorial/)
-- [Scikit-learn Docs](https://scikit-learn.org/)
-- [Render Docs](https://render.com/docs)
-- [REST API Best Practices](https://restfulapi.net/)
 
 ---
 
-**Made with ❤️ for the Nigerian real estate market**
+## 💻 Code Examples
+
+### cURL
+```bash
+curl -X POST https://nigerian-house-data-ipynb.onrender.com/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "toilets": 4,
+    "parking_space": 2,
+    "title": "Detached Duplex",
+    "town": "Ikeja",
+    "state": "Lagos"
+  }'
+```
+
+### Python (`requests`)
+```python
+import requests
+
+url = "https://nigerian-house-data-ipynb.onrender.com/predict"
+payload = {
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "toilets": 4,
+    "parking_space": 2,
+    "title": "Semi Detached Duplex",
+    "town": "Maitama District",
+    "state": "Abuja"
+}
+
+response = requests.post(url, json=payload)
+data = response.json()
+print("Estimated Valuation:", data["formatted_price"])
+```
+
+### JavaScript / TypeScript (`fetch`)
+```javascript
+const response = await fetch("https://nigerian-house-data-ipynb.onrender.com/predict", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    bedrooms: 4,
+    bathrooms: 4,
+    toilets: 5,
+    parking_space: 3,
+    title: "Detached Duplex",
+    town: "Lekki",
+    state: "Lagos"
+  })
+});
+
+const result = await response.json();
+console.log(`Valuation: ${result.formatted_price}`);
+```
+
+---
+
+## 🚀 Local Development Setup
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Trainbow-7/nigerian_house_data.ipynb.git
+cd nigerian_house_data.ipynb
+```
+
+### 2. Set Up Virtual Environment
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# macOS / Linux
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Application
+```bash
+python app.py
+```
+Open [http://localhost:5000](http://localhost:5000) in your browser to test the interactive UI.
+
+---
+
+## 📁 Project Structure
+
+```
+├── app.py                     # Flask Web Application & REST API
+├── main.py                    # Entrypoint wrapper
+├── train_model.py             # ML Model Training & Pipeline script
+├── house_price_model.pkl      # Trained Pipeline Model (Gradient Boosting)
+├── requirements.txt           # Python dependencies
+└── README.md                  # Project documentation
+```
+
+---
+
+## 🛠️ Technology Stack
+
+- **Backend:** Flask, Flask-CORS, Gunicorn
+- **Machine Learning:** Scikit-Learn, Pandas, NumPy
+- **Deployment:** Render Web Service
+- **Environment:** Python 3.10+
+
+---
+
+## 👤 Author & Maintainer
+
+- **Oyedeji Temitayo Samson**
+- **GitHub:** [@Trainbow-7](https://github.com/Trainbow-7)
+- **Repository:** [nigerian_house_data.ipynb](https://github.com/Trainbow-7/nigerian_house_data.ipynb)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
