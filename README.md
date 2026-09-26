@@ -1,6 +1,11 @@
-# Nigeria Houses ML API
+# Nigeria Houses ML API 🏠
 
-A FastAPI-based REST API for predicting Nigerian real estate property types using machine learning.
+A FastAPI-based REST API for predicting Nigerian real estate property types using machine learning. Trained on 24,326 real estate records with 87%+ accuracy.
+
+🔗 **Live Demo:** [realestatevaluation.base44.app](https://realestatevaluation.base44.app)  
+⚡ **API Docs (Swagger UI):** [nigerian-house-data-ipynb.onrender.com/docs](https://nigerian-house-data-ipynb.onrender.com/docs)
+
+> Note: hosted on Render's free tier — the API may take 30–60 seconds to wake up if it's been inactive.
 
 ## 🎯 Features
 
