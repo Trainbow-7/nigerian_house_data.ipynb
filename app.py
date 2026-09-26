@@ -67,7 +67,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.5) 0px, transparent 100%);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 2rem 1rem;
+            padding: 2.5rem 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -83,38 +83,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             margin-bottom: 2.5rem;
         }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            background: rgba(0, 208, 132, 0.1);
-            border: 1px solid rgba(0, 208, 132, 0.3);
-            border-radius: 9999px;
-            color: var(--accent-green);
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            letter-spacing: 0.5px;
-        }
-
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent-green);
-            border-radius: 50%;
-            box-shadow: 0 0 0 rgba(0, 208, 132, 0.7);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 208, 132, 0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(0, 208, 132, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 208, 132, 0); }
-        }
-
         h1 {
-            font-size: 2.4rem;
+            font-size: 2.5rem;
             font-weight: 800;
             letter-spacing: -0.5px;
             margin-bottom: 0.75rem;
@@ -156,9 +126,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .form-grid {
@@ -344,10 +311,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 <div class="container">
     <header>
-        <div class="badge">
-            <div class="pulse-dot"></div>
-            Production ML Valuation Engine
-        </div>
         <h1>Nigeria Real Estate Valuation</h1>
         <p class="subtitle">Machine Learning Model trained on 24,000+ verified Nigerian property listings</p>
     </header>
@@ -355,7 +318,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <div class="grid-layout">
         <!-- Input Form Card -->
         <div class="card">
-            <h2 class="card-title">🏡 Property Specifications</h2>
+            <h2 class="card-title">Property Specifications</h2>
             <form id="predictionForm">
                 <div class="form-grid">
                     <div class="form-group full-width">
@@ -409,7 +372,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
                 <button type="submit" class="btn-predict" id="submitBtn">
                     <span class="spinner" id="btnSpinner"></span>
-                    <span id="btnText">✨ Calculate Estimated Value</span>
+                    <span id="btnText">Calculate Estimated Value</span>
                 </button>
             </form>
         </div>
@@ -417,7 +380,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <!-- Result Card -->
         <div class="card result-panel">
             <div>
-                <h2 class="card-title">📊 Valuation Result</h2>
+                <h2 class="card-title">Valuation Result</h2>
                 <div class="valuation-box">
                     <div class="valuation-label">Estimated Property Price</div>
                     <div class="valuation-price" id="priceDisplay">₦150,000,000</div>
@@ -427,7 +390,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <ul class="summary-list">
                     <li class="summary-item">
                         <span>Model Status</span>
-                        <span style="color: var(--accent-green);">● Active & Ready</span>
+                        <span style="color: var(--accent-green);">Active & Ready</span>
                     </li>
                     <li class="summary-item">
                         <span>Algorithm</span>
@@ -441,7 +404,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </div>
 
             <div class="api-docs-box">
-                <div style="font-weight: 600; margin-bottom: 4px;">⚡ Developer API:</div>
+                <div style="font-weight: 600; margin-bottom: 4px;">Developer API:</div>
                 <code>POST /predict</code>
                 <div style="margin-top: 4px; font-size: 0.75rem;">Direct JSON endpoint ready for web & mobile apps.</div>
             </div>
@@ -500,7 +463,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             priceWords.textContent = 'Could not reach prediction server.';
         } finally {
             btnSpinner.style.display = 'none';
-            btnText.textContent = '✨ Calculate Estimated Value';
+            btnText.textContent = 'Calculate Estimated Value';
             submitBtn.disabled = false;
         }
     }

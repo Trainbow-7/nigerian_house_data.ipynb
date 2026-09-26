@@ -1,27 +1,21 @@
-# Nigeria Real Estate Valuation & House Price Prediction ML API 🏠
-
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Framework-Flask-black.svg)](https://flask.palletsprojects.com/)
-[![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn-orange.svg)](https://scikit-learn.org/)
-[![Render](https://img.shields.io/badge/Deployed-Render-46E3B7.svg)](https://nigerian-house-data-ipynb.onrender.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+# Nigeria Real Estate Valuation & House Price Prediction ML API
 
 A Machine Learning-powered REST API and interactive web application for estimating Nigerian real estate market property values. Trained on **24,000+ verified Nigerian property listings** across major states and metropolitan areas.
 
 ---
 
-### 🌐 Live Deployment & Links
+### Live Deployment & Links
 
-- 🔗 **Live Web App & Valuation Tool:** [nigerian-house-data-ipynb.onrender.com](https://nigerian-house-data-ipynb.onrender.com)
-- ⚡ **API Prediction Endpoint:** `POST` [https://nigerian-house-data-ipynb.onrender.com/predict](https://nigerian-house-data-ipynb.onrender.com/predict)
-- 🩺 **API Health Check:** `GET` [https://nigerian-house-data-ipynb.onrender.com/health](https://nigerian-house-data-ipynb.onrender.com/health)
-- 🐙 **GitHub Repository:** [Trainbow-7/nigerian_house_data.ipynb](https://github.com/Trainbow-7/nigerian_house_data.ipynb)
+- **Live Web App & Valuation Tool:** [nigerian-house-data-ipynb.onrender.com](https://nigerian-house-data-ipynb.onrender.com)
+- **API Prediction Endpoint:** `POST` [https://nigerian-house-data-ipynb.onrender.com/predict](https://nigerian-house-data-ipynb.onrender.com/predict)
+- **API Health Check:** `GET` [https://nigerian-house-data-ipynb.onrender.com/health](https://nigerian-house-data-ipynb.onrender.com/health)
+- **GitHub Repository:** [Trainbow-7/nigerian_house_data.ipynb](https://github.com/Trainbow-7/nigerian_house_data.ipynb)
 
-> 💡 **Note on Hosting:** Hosted on Render's free tier. If the instance is idle, it may take 30–60 seconds for the initial cold start.
+> **Note on Hosting:** Hosted on Render's free tier. If the instance is idle, it may take 30–60 seconds for the initial cold start.
 
 ---
 
-## 🎯 Features
+## Features
 
 - **Accurate Property Valuation** — Generates instant real estate price predictions in Nigerian Naira (₦).
 - **Comprehensive Geographical Coverage** — Trained across 24 Nigerian states and 186 towns/cities (Lagos, Abuja, Rivers, Oyo, Ogun, etc.).
@@ -32,7 +26,7 @@ A Machine Learning-powered REST API and interactive web application for estimati
 
 ---
 
-## 📊 Model Specifications
+## Model Specifications
 
 | Parameter | Specification |
 | :--- | :--- |
@@ -46,7 +40,7 @@ A Machine Learning-powered REST API and interactive web application for estimati
 
 ---
 
-## 📡 API Endpoints & Usage
+## API Endpoints & Usage
 
 ### 1. Make a Price Prediction
 
@@ -106,7 +100,7 @@ Content-Type: application/json
 
 ---
 
-## 💻 Code Examples
+## Code Examples
 
 ### cURL
 ```bash
@@ -165,7 +159,7 @@ console.log(`Valuation: ${result.formatted_price}`);
 
 ---
 
-## 🚀 Local Development Setup
+## Local Development Setup
 
 ### 1. Clone the Repository
 ```bash
@@ -197,7 +191,7 @@ Open [http://localhost:5000](http://localhost:5000) in your browser to test the 
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── app.py                     # Flask Web Application & REST API
@@ -210,7 +204,7 @@ Open [http://localhost:5000](http://localhost:5000) in your browser to test the 
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Backend:** Flask, Flask-CORS, Gunicorn
 - **Machine Learning:** Scikit-Learn, Pandas, NumPy
@@ -219,7 +213,7 @@ Open [http://localhost:5000](http://localhost:5000) in your browser to test the 
 
 ---
 
-## 👤 Author & Maintainer
+## Author & Maintainer
 
 - **Oyedeji Temitayo Samson**
 - **GitHub:** [@Trainbow-7](https://github.com/Trainbow-7)
@@ -227,6 +221,6 @@ Open [http://localhost:5000](http://localhost:5000) in your browser to test the 
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
