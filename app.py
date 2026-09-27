@@ -12,7 +12,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
 
-# Base frontend origin to seamlessly mirror without revealing base44 URL
+# Base frontend origin to seamlessly mirror
 BASE44_ORIGIN = "https://realestatevaluation.base44.app"
 
 # Path to the trained house price regression model
@@ -25,52 +25,119 @@ try:
             model = pickle.load(f)
         print("House price regression model loaded successfully.")
     else:
-        print(f"Warning: {MODEL_PATH} not found yet. Please place the model file in the project folder.")
+        print(f"Warning: {MODEL_PATH} not found. Please place the model file in the project folder.")
 except Exception as e:
     print(f"Error loading model: {e}")
 
-@app.route('/predict', methods=['POST'])
-def predict():
+def execute_prediction(data):
+    """
+    Executes prediction using the loaded regression model.
+    Accepts arbitrary dictionary formats and returns formatted prediction payload.
+    """
     if model is None:
-        return jsonify({'error': 'House price model is not loaded on the server'}), 500
+        return None, "House price model is not loaded on the server"
+
+    if not data or not isinstance(data, dict):
+        return None, "No valid input data provided"
 
     try:
-        data = request.get_json(force=True)
-        if not data:
-            return jsonify({'error': 'No input data provided'}), 400
+        bedrooms = float(data.get('bedrooms') or 0)
+        bathrooms = float(data.get('bathrooms') or 0)
+        toilets = float(data.get('toilets') or 0)
+        parking_space = float(data.get('parking_space') or 0)
+        title = str(data.get('title') or data.get('house_type') or data.get('property_type') or '').strip()
+        town = str(data.get('town') or '').strip()
+        state = str(data.get('state') or '').strip()
 
-        # Construct DataFrame matching the trained regression features
         input_df = pd.DataFrame([{
-            'bedrooms': float(data.get('bedrooms', 0)),
-            'bathrooms': float(data.get('bathrooms', 0)),
-            'toilets': float(data.get('toilets', 0)),
-            'parking_space': float(data.get('parking_space', 0)),
-            'title': data.get('title') or data.get('house_type') or data.get('property_type', ''),
-            'town': data.get('town', ''),
-            'state': data.get('state', '')
+            'bedrooms': bedrooms,
+            'bathrooms': bathrooms,
+            'toilets': toilets,
+            'parking_space': parking_space,
+            'title': title,
+            'town': town,
+            'state': state
         }])
 
-        # Predict price (in NGN)
         raw_prediction = float(model.predict(input_df)[0])
         predicted_price = max(0.0, raw_prediction)
+        formatted_price = f"₦{predicted_price:,.2f}"
 
-        return jsonify({
+        bed_str = f"{int(bedrooms)} Bedroom" if bedrooms == 1 else f"{int(bedrooms) if bedrooms.is_integer() else bedrooms} Bedrooms"
+        bath_str = f"{int(bathrooms)} Bathroom" if bathrooms == 1 else f"{int(bathrooms) if bathrooms.is_integer() else bathrooms} Bathrooms"
+        prop_type = title if title else "Property"
+        location_str = f"{town}, {state}" if (town and state) else (town or state or "Nigeria")
+
+        rationale = f"Valuation estimate for a {bed_str}, {bath_str} {prop_type} in {location_str} generated using Gradient Boosting regression."
+
+        result_payload = {
             'status': 'success',
             'predicted_price': round(predicted_price, 2),
-            'formatted_price': f"₦{predicted_price:,.2f}",
+            'price': round(predicted_price, 2),
+            'predicted_house_price': round(predicted_price, 2),
+            'formatted_price': formatted_price,
             'currency': 'NGN',
+            'confidence': 'High',
+            'rationale': rationale,
             'inputs': {
-                'bedrooms': data.get('bedrooms'),
-                'bathrooms': data.get('bathrooms'),
-                'toilets': data.get('toilets'),
-                'parking_space': data.get('parking_space'),
-                'house_type': data.get('title') or data.get('house_type') or data.get('property_type'),
-                'town': data.get('town'),
-                'state': data.get('state')
+                'bedrooms': bedrooms,
+                'bathrooms': bathrooms,
+                'toilets': toilets,
+                'parking_space': parking_space,
+                'title': title,
+                'house_type': title,
+                'town': town,
+                'state': state
             }
-        })
+        }
+        return result_payload, None
     except Exception as e:
-        return jsonify({'error': f'Prediction failed: {str(e)}'}), 400
+        return None, f"Prediction computation failed: {str(e)}"
+
+def format_prediction_response(result_payload):
+    """
+    Wraps the prediction payload so it is compatible with both
+    Base44 frontend expectations (n.data.result) and standard direct APIs.
+    """
+    response = {
+        'status': 'success',
+        'result': result_payload,
+        'predicted_price': result_payload['predicted_price'],
+        'price': result_payload['price'],
+        'formatted_price': result_payload['formatted_price'],
+        'currency': result_payload['currency'],
+        'confidence': result_payload['confidence'],
+        'rationale': result_payload['rationale'],
+        'inputs': result_payload['inputs']
+    }
+    return jsonify(response)
+
+@app.route('/predict', methods=['POST', 'OPTIONS'])
+def predict():
+    if request.method == 'OPTIONS':
+        return ('', 204)
+    data = request.get_json(silent=True, force=True) or {}
+    res, err = execute_prediction(data)
+    if err:
+        return jsonify({'error': err}), 400
+    return format_prediction_response(res)
+
+@app.route('/api/apps/<path:subpath>', methods=['POST', 'OPTIONS'])
+@app.route('/apps/<path:subpath>', methods=['POST', 'OPTIONS'])
+@app.route('/api/functions/<path:subpath>', methods=['POST', 'OPTIONS'])
+@app.route('/functions/<path:subpath>', methods=['POST', 'OPTIONS'])
+def handle_app_functions(subpath):
+    if request.method == 'OPTIONS':
+        return ('', 204)
+    if 'predict' in subpath.lower() or 'price' in subpath.lower():
+        data = request.get_json(silent=True, force=True) or {}
+        res, err = execute_prediction(data)
+        if err:
+            return jsonify({'error': err}), 400
+        return format_prediction_response(res)
+    
+    # Forward non-prediction function calls to proxy
+    return proxy(request.path.lstrip('/'))
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -80,15 +147,23 @@ def health():
         'model_type': 'GradientBoostingRegressor (Nigeria Real Estate Valuation)'
     })
 
-# Transparent Reverse Proxy for the original interface without revealing base44
+# Transparent Reverse Proxy for the frontend interface
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'])
 @app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'])
 def proxy(path):
+    # Intercept any POST requests that target predictions
+    if request.method == 'POST' and ('predict' in path.lower() or 'price' in path.lower()):
+        data = request.get_json(silent=True, force=True) or {}
+        res, err = execute_prediction(data)
+        if err:
+            return jsonify({'error': err}), 400
+        return format_prediction_response(res)
+
     target_url = f"{BASE44_ORIGIN}/{path}"
     if request.query_string:
         target_url += f"?{request.query_string.decode('utf-8')}"
 
-    # Filter out host, content-length, connection, and accept-encoding so upstream returns raw content
+    # Filter out headers that could conflict with upstream
     headers = {
         k: v for k, v in request.headers 
         if k.lower() not in ['host', 'content-length', 'connection', 'accept-encoding']
