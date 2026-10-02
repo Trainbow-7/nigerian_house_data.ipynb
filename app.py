@@ -29,6 +29,34 @@ try:
 except Exception as e:
     print(f"Error loading model: {e}")
 
+def normalize_title(raw_title):
+    """
+    Maps various user titles and aliases to standard categories present in the training set.
+    """
+    clean = str(raw_title or '').strip().lower()
+    mapping = {
+        'flat': 'block of flats',
+        'flats': 'block of flats',
+        'apartment': 'block of flats',
+        'apartments': 'block of flats',
+        'block of flats': 'block of flats',
+        'block of flat': 'block of flats',
+        'duplex': 'detached duplex',
+        'mansion': 'detached duplex',
+        'detached duplex': 'detached duplex',
+        'terraced duplex': 'terraced duplexes',
+        'terraced duplexes': 'terraced duplexes',
+        'semi detached duplex': 'semi detached duplex',
+        'semi-detached duplex': 'semi detached duplex',
+        'bungalow': 'detached bungalow',
+        'detached bungalow': 'detached bungalow',
+        'semi detached bungalow': 'semi detached bungalow',
+        'semi-detached bungalow': 'semi detached bungalow',
+        'terraced bungalow': 'terraced bungalow',
+        'terraced bungalows': 'terraced bungalow',
+    }
+    return mapping.get(clean, clean)
+
 def execute_prediction(data):
     """
     Executes prediction using the loaded regression model.
@@ -41,22 +69,27 @@ def execute_prediction(data):
         return None, "No valid input data provided"
 
     try:
-        bedrooms = float(data.get('bedrooms') or 0)
-        bathrooms = float(data.get('bathrooms') or 0)
-        toilets = float(data.get('toilets') or 0)
-        parking_space = float(data.get('parking_space') or 0)
-        title = str(data.get('title') or data.get('house_type') or data.get('property_type') or '').strip()
-        town = str(data.get('town') or '').strip()
-        state = str(data.get('state') or '').strip()
+        bedrooms = max(1.0, float(data.get('bedrooms') or 1))
+        bathrooms = max(1.0, float(data.get('bathrooms') or 1))
+        toilets = max(1.0, float(data.get('toilets') or bathrooms))
+        parking_space = max(0.0, float(data.get('parking_space') if data.get('parking_space') is not None else (data.get('parking') or 1)))
+
+        raw_title = str(data.get('title') or data.get('house_type') or data.get('property_type') or 'Detached Duplex').strip()
+        raw_town = str(data.get('town') or '').strip()
+        raw_state = str(data.get('state') or '').strip()
+
+        norm_title = normalize_title(raw_title)
+        norm_town = raw_town.lower()
+        norm_state = raw_state.lower()
 
         input_df = pd.DataFrame([{
             'bedrooms': bedrooms,
             'bathrooms': bathrooms,
             'toilets': toilets,
             'parking_space': parking_space,
-            'title': title,
-            'town': town,
-            'state': state
+            'title': norm_title,
+            'town': norm_town,
+            'state': norm_state
         }])
 
         raw_prediction = float(model.predict(input_df)[0])
@@ -65,10 +98,10 @@ def execute_prediction(data):
 
         bed_str = f"{int(bedrooms)} Bedroom" if bedrooms == 1 else f"{int(bedrooms) if bedrooms.is_integer() else bedrooms} Bedrooms"
         bath_str = f"{int(bathrooms)} Bathroom" if bathrooms == 1 else f"{int(bathrooms) if bathrooms.is_integer() else bathrooms} Bathrooms"
-        prop_type = title if title else "Property"
-        location_str = f"{town}, {state}" if (town and state) else (town or state or "Nigeria")
+        prop_type = raw_title if raw_title else "Property"
+        location_str = f"{raw_town}, {raw_state}" if (raw_town and raw_state) else (raw_town or raw_state or "Nigeria")
 
-        rationale = f"Valuation estimate for a {bed_str}, {bath_str} {prop_type} in {location_str} generated using Gradient Boosting regression."
+        rationale = f"Valuation estimate for a {bed_str}, {bath_str} {prop_type} in {location_str} generated using HistGradientBoosting regression."
 
         result_payload = {
             'status': 'success',
@@ -84,10 +117,10 @@ def execute_prediction(data):
                 'bathrooms': bathrooms,
                 'toilets': toilets,
                 'parking_space': parking_space,
-                'title': title,
-                'house_type': title,
-                'town': town,
-                'state': state
+                'title': raw_title,
+                'house_type': raw_title,
+                'town': raw_town,
+                'state': raw_state
             }
         }
         return result_payload, None
